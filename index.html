@@ -296,6 +296,31 @@
 
 
     <script>
+        let v_array = [];
+
+        let v_ajax = new XMLHttpRequest();
+
+        let v_url = "https://api.odcloud.kr/api/EvInfoServiceV2/v1/getEvSearchList";
+        let v_query = "?serviceKey=YH1GhOHgfwGDXSpI%2B8hDxHrXKh%2FmrAVYzXRuJu4UJDEaSOJIhNQyBP%2Bg8ELz%2FSsKDJwXAMBLrRnS7mBvbXtHbw%3D%3D";
+        v_query += "&perPage=3150";
+        v_query += "&page=1";
+
+        v_ajax.open('GET', v_url + v_query);
+
+        v_ajax.onload = () => {
+            let v_json = JSON.parse(v_ajax.response);
+
+            v_array.push(v_json['data']);
+            v_array = v_array[0];
+
+            localStorage.setItem('elecItem', JSON.stringify(v_array));
+        }
+
+        v_ajax.send();
+        console.log('통신 요청 완료');
+    </script>
+
+    <script>
         let v_login = JSON.parse(sessionStorage.getItem('login'));
         let v_myInfo = document.getElementsByClassName('my-info')[0];
         let v_loginBtn = document.getElementsByClassName('login')[0];
