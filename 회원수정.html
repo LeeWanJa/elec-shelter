@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원수정</title>
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-storage-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAhRj1kzsr6IRgUbVg5EaBXYsegRsI3IyI",
+            authDomain: "electrinic-car.firebaseapp.com",
+            projectId: "electrinic-car",
+            storageBucket: "electrinic-car.appspot.com",
+            messagingSenderId: "525878006251",
+            appId: "1:525878006251:web:5f9f2494f85e6b309e09ae",
+            measurementId: "G-3S6DFB92GY"
+        };
+        firebase.initializeApp(firebaseConfig);
+    </script>
+
+    <script src="./resources/js/common.js"></script>
+
+    <style>
+        div {
+            border: 0px solid black;
+            width: 90%;
+        }
+
+        p {
+            margin: 0;
+        }
+
+        input {
+            width: 435px;
+            height: 30px;
+            font-size: 15px;
+            padding: 5px;
+            margin-top: 5px;
+            margin-bottom: 10px;
+            border-radius: 7px;
+        }
+
+        .container {
+            margin: auto;
+            width: 500px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border: 0.1px solid rgb(132, 130, 130);
+            border-radius: 5px;
+            box-shadow: 0 0px 70px rgba(0, 0, 0, 0.1);
+        }
+
+        .img-box {
+            margin-top: 30px;
+            width: 30%;
+            height: 150px;
+            text-align: center;
+
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #myImg {
+            width: 100%;
+            height: 100%;
+            border-radius: 100%;
+        }
+
+        .id-box {
+            margin-top: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        #myName {
+            margin: 10px;
+            font-size: 20px;
+            color: #2c2c2c;
+        }
+
+        .btnBox {
+            display: flex;
+            margin-top: 20px;
+            margin-bottom: 40px;
+        }
+
+        .btnBox div {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding-top: 20px;
+            padding-bottom: 20px;
+            border-radius: 10px;
+            font-size: 20px;
+            font-weight: bolder;
+            color: white;
+            cursor: pointer;
+        }
+
+        #sign-box {
+            background-color: #4668CF;
+            margin-right: 10px;
+        }
+
+        #sign-box:hover {
+            background-color: #5d80e8;
+        }
+
+        #quit-box {
+            background-color: #61646a;
+            margin-left: 10px;
+        }
+
+        #quit-box:hover {
+            background-color: #787c84;
+        }
+
+        #deleteBtn{
+            background-color: rgb(252, 45, 45);
+            width: 150px;
+            height: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 5px;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+        }
+
+        #deleteBtn:hover{
+            opacity: 0.8;
+            transition-duration: 0.3s;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1 style="color:#4668CF; font-size: 30px;">회원정보 수정</h1>
+
+        <div class="img-box">
+            <img id="myImg" src="">
+        </div>
+        <h2 id="myName"></h2>
+
+        <!-- 아이디 -->
+        <div class="id-box">
+            <p id="myId" style="font-size: 20px;"></p>
+        </div>
+
+        <!-- 비밀번호 -->
+        <div class="pw-box">
+            <p>비밀번호</p>
+            <input id="inputPw" type="password" placeholder="비밀번호">
+        </div>
+
+        <!-- 닉네임 -->
+        <div class="name-box">
+            <p>닉네임</p>
+            <input id="inputName" type="text" placeholder="닉네임">
+        </div>
+
+        <!-- 프로필 이미지 변경 -->
+        <div class="img-change">
+            프로필 이미지 변경
+            <input id="inputImg" type="file" accept="image/*" onchange="f_readImg()">
+        </div>
+
+        <div class="deleteBox">
+            회원탈퇴
+            <div id="deleteBtn">Delete Account</div>
+        </div>
+
+        <!-- 수정하기 -->
+        <div class="btnBox">
+            <div id="sign-box">수정하기</div>
+            <div id="quit-box">취소</div>
+        </div>
+    </div>
+
+    <script>
+        let v_myName = document.getElementById('myName');
+        v_myName.innerHTML = JSON.parse(sessionStorage.getItem('login'))['memName'];
+
+        let v_myId = document.getElementById('myId');
+        v_myId.innerHTML = JSON.parse(sessionStorage.getItem('login'))['memId'];
+
+        let v_login = JSON.parse(sessionStorage.getItem('login'));
+        console.log(v_login);
+
+        let v_sessionImg = JSON.parse(sessionStorage.getItem('login'))['profImg'];
+        let v_myImg = document.getElementById('myImg');
+        let v_beforeImg;
+        console.log(v_sessionImg);
+        if (!v_sessionImg) {
+            v_myImg.src = "./resources/images/images.png";
+        } else {
+            v_myImg.src = v_sessionImg;
+        }
+
+        let imgCheck = false;
+
+        let imgCount = 0;
+
+        const db = firebase.firestore();
+        const storage = firebase.storage();
+
+        document.getElementById('sign-box').addEventListener('click', () => {
+            let v_myPw = document.getElementById('inputPw').value;
+            let v_changeName = document.getElementById('inputName').value;
+
+            let v_json = {};
+
+            console.log(imgCheck);
+            if (!v_myPw && !v_changeName && !imgCheck) {
+                alert('변경할 내용을 적어주세요!');
+                return;
+            }
+
+            if (v_myPw) {
+                v_json['memPw'] = v_myPw;
+            }
+
+            if (v_changeName) {
+                v_json['memName'] = v_changeName;
+            }
+
+            db.collection('member').doc(v_login['memId']).update(v_json)
+                .then((result) => {
+                    console.log(result);
+
+                    if (v_changeName) {
+                        v_login['memName'] = v_json['memName'];
+                    }
+
+                    if (v_myPw) {
+                        v_login['memPw'] = v_json['memPw'];
+                    }
+
+                    sessionStorage.setItem('login', JSON.stringify(v_login));
+
+                    console.log("Document successfully written!");
+                    alert("회원수정이 완료됐습니다!");
+                    location.replace("./index.html");
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        });
+
+
+        // 취소 버튼
+        document.getElementById('quit-box').addEventListener('click', () => {
+            if (v_beforeImg) {
+                v_login['profImg'] = v_beforeImg;
+                sessionStorage.setItem('login', JSON.stringify(v_login));
+                document.querySelector('#myImg').src = v_login['profImg'];
+            }
+
+            alert('변경을 취소하겠습니다.');
+            location.replace('./index.html');
+        });
+
+
+        // 회원 탈퇴
+        document.getElementById('deleteBtn').addEventListener('click', () => {
+            if(confirm('계정을 삭제 하시겠습니까?')){
+                db.collection('member').doc(v_login['memId']).delete()
+                    .then((result) => {
+                        console.log(result);
+                        sessionStorage.removeItem('login');
+                        alert('탈퇴 완료');
+                        location.replace('./index.html');
+                    })
+                    .catch((err) => {
+                        console.log('에러발생', err);
+                    });
+            }
+        });
+
+
+        function f_readImg() {
+            let v_inputFile = event.target.files[0];
+            let v_imgName = makeUniqueId() + v_inputFile['type'].replace('image/', '.');
+            let v_imgPath = "profile/" + v_imgName;
+            let storageRef = storage.ref();
+            let path = storageRef.child(v_imgPath);
+            let upload = path.put(v_inputFile);
+
+            upload.on('state_changed',
+                () => {
+
+                }, (err) => {
+                    console.log('업로드 에러 발생', err);
+                }, () => {
+                    upload.snapshot.ref.getDownloadURL()
+                        .then((url) => {
+                            console.log('업로드된 이미지 경로', url);
+
+                            let v_json = { profImg: url };
+
+                            db.collection('member').doc(v_login['memId']).update(v_json)
+                                .then((result) => {
+                                    console.log(result);
+                                    // 변경 이전 img
+                                    if (imgCount == 0) {
+                                        v_beforeImg = v_login['profImg'];
+                                    }
+
+                                    // 변경 후 img
+                                    v_login['profImg'] = url;
+                                    console.log(v_login['profImg']);
+
+                                    // 직접 sessionStorage에 적용하는 시점
+                                    sessionStorage.setItem('login', JSON.stringify(v_login));
+                                    document.querySelector('#myImg').src = v_login['profImg'];
+                                    imgCheck = true;
+                                    imgCount++;
+                                    console.log(imgCount);
+                                })
+                                .catch((error) => {
+                                    console.log(error);
+                                });
+                        })
+                }
+            )
+        }
+
+
+    </script>
+</body>
+
+
+</html>
