@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>홈화면</title>
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=edd7905c74684d12bb53f535ffdf5f51"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        html, 
+        body{
+            width: 100%;
+            height: 100%;
+        }
+
+        .container {
+            width: 100%;
+            height: 100%;
+        }
+
+        .top {
+            width: 100%;
+            height: 15%;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .logo {
+            font-size: 50px;
+            font-weight: bolder;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding-right: 60px;
+        }
+
+        .logo img {
+            width: 50px;
+            height: 50px;
+            padding-right: 10px;
+        }
+
+        .boardBtn {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 25px;
+            font-weight: bolder;
+            background-color: rgb(135, 200, 37);
+            height: 50%;
+            transform: translate(0, 50%);
+            border-radius: 10px;
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+
+        .boardBtn:hover {
+            filter: opacity(0.8);
+            transition-duration: 0.3s;
+        }
+
+        .boardBtn a {
+            color: white;
+        }
+
+        .login {
+            font-size: 18px;
+            font-weight: border;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #4668CF;
+            border-radius: 10px;
+            color: white;
+            font-weight: bolder;
+            padding-right: 5px;
+            padding-left: 5px;
+            cursor: pointer;
+            height: 50%;
+            transform: translate(0, 50%);
+        }
+
+        .login:hover {
+            filter: opacity(0.8);
+            transition-duration: 0.3s;
+        }
+
+        .main {
+            display: flex;
+            height:85%;
+        }
+
+        .box {
+            width: 30%;
+            height: 100%;
+            margin: 10px;
+        }
+
+        .search-bar {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height:7%;
+            margin-top: 10px;
+        }
+
+        .search-bar input {
+            width: 90%;
+            height: 35px;
+            font-size: 20px;
+            border-radius: 5px;
+            padding-left: 10px;
+        }
+
+        #search-img {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding-left: 10px;
+        }
+
+        #search-img>img {
+            width: 25px;
+            cursor: pointer;
+        }
+
+        #search-img>img:hover {
+            filter: opacity(50%);
+        }
+
+        .search-box {
+            border: 1px solid black;
+            width: 92%;
+            height: 90%;
+            padding: 15px;
+            overflow-y: scroll;
+            border-top-left-radius: 10px;
+            border-bottom-left-radius: 10px;
+        }
+
+        .search-box h2 {
+            text-align: center;
+        }
+
+        .elec-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid black;
+        }
+
+        .location-info>li {
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .map-info {
+            font-size: 15px;
+            background-color: orange;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 5px;
+            padding-left: 5px;
+            padding-right: 5px;
+            font-weight: bolder;
+            cursor: pointer;
+            margin-right: 5px;
+            height: 50px;
+            width: 50px;
+        }
+
+        .map-info:hover {
+            background-color: rgb(206, 183, 141);
+            transition-duration: 0.3s;
+        }
+
+        .location-detail {
+            font-size: 15px;
+            margin-top: 10px;
+            margin-left: 20px;
+            display: none;
+        }
+
+        .map-box{
+            width:50%;
+            height:100%;
+            margin-top: 20px;
+            margin-right: 10px;
+            border-radius: 10px;
+        }   
+
+        .my-info {
+            width: 20%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            align-items: center;
+            border: 1px solid black;
+            margin-top: 20px;
+            border-radius: 10px;
+            position: relative;
+        }
+
+        .my-img {
+            width: 80%;
+            height: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+
+            position: absolute;
+            top: 100px;
+        }
+
+        .img-box {
+            width: 100%;
+            height: 200px;
+        }
+
+        .my-img img {
+            width: 100%;
+            height: 100%;
+            border-radius: 8px;
+        }
+
+        .name {
+            font-size: 23px;
+            padding-top: 80px;
+        }
+
+        #mypage {
+            margin-top: 80px;
+            cursor: pointer;
+            font-size: 20px;
+            font-weight: bolder;
+        }
+
+        .logout {
+            margin-top: 30px;
+            cursor: pointer;
+            font-size: 20px;
+            font-weight: bolder;
+        }
+
+        a {
+            color: black;
+            text-decoration: none;
+        }
+
+        .search-img {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .search-img img {
+            width: 100%;
+            height: 100%;
+        }
+
+        .search-text {
+            position: absolute;
+            left: 50%;
+            top: 10%;
+            transform: translate(-50%, 0%);
+        }
+    </style>
+</head>
+
+
+<body>
+    <div class="container">
+        <div class="top">
+            <div class="logo">
+                <a href="./index.html"><img src="./resources/images/ev-station.svg"></a>
+                <a href="./index.html">ELEC-SHELTER</a>
+            </div>
+
+            <div class="boardBtn"><a href="./게시판.html">전기자동차 갤러리</a></div>
+
+            <div class="login"><a href="./로그인.html" style="color: white">로그인</a></div>
+        </div>
+
+        <div class="main">
+
+            <div class="box">
+                <div class="search-bar">
+                    <input id="elec-search" type="text" placeholder="시도명을 입력하세요!">
+                    <div id="search-img"><img src="./resources/images/search.svg"></div>
+                </div>
+
+                <div class="search-box">
+                    <div class="search-img">
+                        <img src="./resources/images/urbanbrush-20211028113441405571.jpg" alt="">
+                        <h2 class="search-text">시도명을 입력해주세요!</h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="map-box">
+                
+            </div>
+
+            <div class="my-info">
+                <h2 style="text-align: center;">로그인을 해주세요!</h2>
+            </div>
+        </div>
+
+    </div>
+
+
+    <script>
+        let v_array = [];
+
+        let v_ajax = new XMLHttpRequest();
+
+        let v_url = "https://api.odcloud.kr/api/EvInfoServiceV2/v1/getEvSearchList";
+        let v_query = "?serviceKey=YH1GhOHgfwGDXSpI%2B8hDxHrXKh%2FmrAVYzXRuJu4UJDEaSOJIhNQyBP%2Bg8ELz%2FSsKDJwXAMBLrRnS7mBvbXtHbw%3D%3D";
+        v_query += "&perPage=3150";
+        v_query += "&page=1";
+
+        v_ajax.open('GET', v_url + v_query);
+
+        v_ajax.onload = () => {
+            let v_json = JSON.parse(v_ajax.response);
+
+            v_array.push(v_json['data']);
+            v_array = v_array[0];
+
+            localStorage.setItem('elecItem', JSON.stringify(v_array));
+        }
+
+        v_ajax.send();
+        console.log('통신 요청 완료');
+    </script>
+
+    <script>
+        let v_mapBox = document.getElementsByClassName('map-box')[0];
+        console.log(v_mapBox);
+        let options = {
+            center: new kakao.maps.LatLng(33.450701, 126.570667),
+            level: 3
+        };
+
+        let map = new kakao.maps.Map(v_mapBox, options);
+    </script>
+
+    <script>
+        let v_login = JSON.parse(sessionStorage.getItem('login'));
+        let v_myInfo = document.getElementsByClassName('my-info')[0];
+        let v_loginBtn = document.getElementsByClassName('login')[0];
+
+        // localStorage 에서 전기차 충전소 위치 데이터 가져오기
+        let v_elecItems = JSON.parse(localStorage.getItem('elecItem'));
+        console.log(v_elecItems);
+
+        let v_searchBox = document.getElementsByClassName('search-box')[0];
+
+        let startIdx;
+        let endIdx;
+
+        // 입력
+        let v_elecSearch = document.getElementById('elec-search');
+
+        document.getElementById('search-img').addEventListener('click', () => {
+
+            v_searchBox.scrollTop = 0;
+            v_searchBox.innerHTML = "";
+
+            startIdx = 0;
+            endIdx = 15;
+
+            // while문으로 변환 
+            // 해당 키워드가 포함된 주소가 15개 나올때까지 반복
+            let count = 0;
+            let idx = 0;
+            while (true) {
+                let item = v_elecItems[idx];
+
+                if (item['addr'].includes(v_elecSearch.value)) {
+                    if (item['chargeTp'] == 1) {
+                        item['chargeTp'] = '완속';
+                    } else {
+                        item['chargeTp'] = '급속';
+                    }
+
+                    // 충전기 상태 코드
+                    if (item['cpStat'] == 1) {
+                        item['cpStat'] = '충전가능';
+                    } else if (item['cpStat'] == 2) {
+                        item['cpStat'] = '충전중';
+                    } else if (item['cpStat'] == 3) {
+                        item['cpStat'] = '고장, 점검';
+                    } else if (item['cpStat'] == 4) {
+                        item['cpStat'] = '통신장애';
+                    } else if (item['cpStat'] == 5) {
+                        item['cpStat'] = '통신미연결';
+                    }
+
+                    // 충전방식
+                    if (item['cpTp'] == 1) {
+                        item['cpTp'] = 'B타입(5핀)';
+                    } else if (item['cpTp'] == 2) {
+                        item['cpTp'] = 'C타입(5핀)';
+                    } else if (item['cpTp'] == 3) {
+                        item['cpTp'] = 'BC타입(5핀)';
+                    } else if (item['cpTp'] == 4) {
+                        item['cpTp'] = 'BC타입(7핀)';
+                    } else if (item['cpTp'] == 5) {
+                        item['cpTp'] = 'DC차데모';
+                    } else if (item['cpTp'] == 6) {
+                        item['cpTp'] = 'AC3상';
+                    } else if (item['cpTp'] == 7) {
+                        item['cpTp'] = 'DC콤보';
+                    } else if (item['cpTp'] == 8) {
+                        item['cpTp'] = 'DC차데모 + DC콤보';
+                    }
+
+                    let v_input = '<div class="elec-info">';
+                    v_input += '<div class="location-info">';
+                    v_input += '<li class="address-btn" onclick="f_address()">' + item['addr'];
+                    v_input += '<div class="location-detail">';
+                    v_input += '<input type="hidden" value="' + item['addr'] + '"/>';  
+                    v_input += '충전기 타입 : ' + item['chargeTp'] + '<br>';
+                    v_input += '충전기ID : ' + item['cpId'] + '<br>';
+                    v_input += '충전기명칭 : ' + item['csNm'] + '<br>';
+                    v_input += '충전기상태코드 : ' + item['cpStat'] + '<br>';
+                    v_input += '충전방식 : ' + item['cpTp'] + '<br>';
+                    v_input += '충전소ID : ' + item['csId'] + '<br>';
+                    v_input += '충전기 상태 갱신 시각 : ' + item['statUpdatetime'] + '<br>';
+                    v_input += '<p value="' + item['lat'] + '">경도: ' + item['lat'] + '</p>';
+                    v_input += '<p value="' + item['longi'] + '">위도: ' + item['longi'] + '</p>';
+                    v_input += '</div></li></div> <div class="map-info" onclick="f_map()">지도</div> </div>'
+
+                    v_searchBox.innerHTML += v_input;
+
+                    count++;
+                    if (count == 15) {
+                        count++;
+                        break;
+                    }
+                }
+
+                idx++;
+                if (idx == v_elecItems.length) {
+                    break;
+                }
+            }
+            startIdx = idx;
+            endIdx = startIdx + 9;
+
+
+            // 무한 스크롤 구현
+            v_searchBox.addEventListener('scroll', () => {
+                let v_scrollTop = v_searchBox.scrollTop;
+                let v_clientHeight = v_searchBox.clientHeight;
+                let v_scrollHeight = v_searchBox.scrollHeight;
+
+                if (v_scrollTop + v_clientHeight >= v_scrollHeight * 0.9) {
+                    if (startIdx >= v_elecItems.length) {
+                        return;
+                    }
+
+                    for (let i = startIdx; i < endIdx; i++) {
+                        let item = v_elecItems[i];
+
+                        if (item['addr'].includes(v_elecSearch.value)) {
+                            // 충전기타입
+                            if (item['chargeTp'] == 1) {
+                                item['chargeTp'] = '완속';
+                            } else {
+                                item['chargeTp'] = '급속';
+                            }
+
+                            // 충전기 상태 코드
+                            if (item['cpStat'] == 1) {
+                                item['cpStat'] = '충전가능';
+                            } else if (item['cpStat'] == 2) {
+                                item['cpStat'] = '충전중';
+                            } else if (item['cpStat'] == 3) {
+                                item['cpStat'] = '고장, 점검';
+                            } else if (item['cpStat'] == 4) {
+                                item['cpStat'] = '통신장애';
+                            } else if (item['cpStat'] == 5) {
+                                item['cpStat'] = '통신미연결';
+                            }
+
+                            // 충전방식
+                            if (item['cpTp'] == 1) {
+                                item['cpTp'] = 'B타입(5핀)';
+                            } else if (item['cpTp'] == 2) {
+                                item['cpTp'] = 'C타입(5핀)';
+                            } else if (item['cpTp'] == 3) {
+                                item['cpTp'] = 'BC타입(5핀)';
+                            } else if (item['cpTp'] == 4) {
+                                item['cpTp'] = 'BC타입(7핀)';
+                            } else if (item['cpTp'] == 5) {
+                                item['cpTp'] = 'DC차데모';
+                            } else if (item['cpTp'] == 6) {
+                                item['cpTp'] = 'AC3상';
+                            } else if (item['cpTp'] == 7) {
+                                item['cpTp'] = 'DC콤보';
+                            } else if (item['cpTp'] == 8) {
+                                item['cpTp'] = 'DC차데모 + DC콤보';
+                            }
+
+                            let v_input = '<div class="elec-info">';
+                            v_input += '<div class="location-info">';
+                            v_input += '<li class="address-btn" onclick="f_address()">' + item['addr'];
+                            v_input += '<div class="location-detail">';
+                            v_input += '<input type="hidden" value="' + item['addr'] + '"/>';  
+                            v_input += '충전기 타입 : ' + item['chargeTp'] + '<br>';
+                            v_input += '충전기ID : ' + item['cpId'] + '<br>';
+                            v_input += '충전기명칭 : ' + item['csNm'] + '<br>';
+                            v_input += '충전기상태코드 : ' + item['cpStat'] + '<br>';
+                            v_input += '충전방식 : ' + item['cpTp'] + '<br>';
+                            v_input += '충전소ID : ' + item['csId'] + '<br>';
+                            v_input += '충전기 상태 갱신 시각 : ' + item['statUpdatetime'] + '<br>';
+                            v_input += '<p value="">경도: ' + item['lat'] + '</p>';
+                            v_input += '<p value="">위도: ' + item['longi'] + '</p>';
+                            v_input += '</div></li></div> <div class="map-info" onclick="f_map()">지도</div> </div>'
+
+                            v_searchBox.innerHTML += v_input;
+
+                            startIdx++;
+
+                            if (startIdx == endIdx) {
+                                break;
+                            }
+                        }
+                    }
+
+                    startIdx = endIdx;
+                    endIdx = startIdx + 9;
+
+                    if (endIdx > v_elecItems.length) {
+                        endIdx = v_elecItems.length;
+                    }
+                }
+            });
+
+
+        });
+
+        let v_name = JSON.parse(sessionStorage.getItem('login'))['memName'];
+        let v_sessionImg = JSON.parse(sessionStorage.getItem('login'))['profImg'];
+        console.log(v_sessionImg);
+
+        //로그인 상태라면
+        if (v_login) {
+            if (!v_sessionImg) {
+                v_loginBtn.innerHTML = '<a href="./로그아웃.html" style="color: white">로그아웃</a>';
+
+                v_myInfo.innerHTML = '<div class="my-img"><div class="img-box"><img src="./resources/images/images.png"></div><div class="name">ID: ' + v_name + '</div><div id="mypage">회원수정</div></div>';
+            } else {
+                v_loginBtn.innerHTML = '<a href="./로그아웃.html" style="color: white">로그아웃</a>';
+
+                v_myInfo.innerHTML = '<div class="my-img"><div class="img-box"><img src=' + v_sessionImg + '"></div><div class="name">ID: ' + v_name + '</div><div id="mypage">회원수정</div></div>';
+            }
+        }
+
+
+        // 회원수정 이동
+        let v_mypage = document.getElementById('mypage');
+        v_mypage.addEventListener('click', () => {
+            location.replace('./회원수정.html');
+        });
+
+
+        function f_address() {
+            let v_detail = event.target.children[0];
+
+            if (v_detail.style.display == "none") {
+                v_detail.style.display = "block";
+            } else {
+                v_detail.style.display = "none";
+            }
+        }
+
+        function f_map() {
+
+            v_addr = event.target.parentElement.children[0].children[0].children[0].children[0].value;
+
+            var openNewWindow = window.open("about:blank");
+            openNewWindow.location.href = "https://map.kakao.com/link/search/" + v_addr;
+        }
+
+    </script>
+</body>
+
+</html>

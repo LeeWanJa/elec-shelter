@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>게시판</title>
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-storage-compat.js"></script>
+
+    <script src="./resources/js/common.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAhRj1kzsr6IRgUbVg5EaBXYsegRsI3IyI",
+            authDomain: "electrinic-car.firebaseapp.com",
+            projectId: "electrinic-car",
+            storageBucket: "electrinic-car.appspot.com",
+            messagingSenderId: "525878006251",
+            appId: "1:525878006251:web:5f9f2494f85e6b309e09ae",
+            measurementId: "G-3S6DFB92GY"
+        };
+        firebase.initializeApp(firebaseConfig);
+    </script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+
+            position: relative;
+        }
+
+        .box {
+            margin: auto;
+            width: 600px;
+            height: 500px;
+            box-shadow: 0 0px 70px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+
+            position: relative;
+        }
+
+        .logo {
+            font-size: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: rgb(100, 162, 7);
+            font-weight: bolder;
+        }
+
+        #homeBtn {
+            position: absolute;
+            left: 85px;
+            top: 65px;
+            background-color: #4668CF;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 3px;
+            color: white;
+            font-weight: bolder;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        #homeBtn:hover {
+            opacity: 0.7;
+            transition-duration: 0.3s;
+        }
+
+        #writeBtn {
+            position: absolute;
+            left: 19px;
+            top: 65px;
+            background-color: #4668CF;
+            padding: 3px;
+            color: white;
+            font-weight: bolder;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        #writeBtn:hover {
+            opacity: 0.7;
+            transition-duration: 0.3s;
+        }
+
+        .board {
+            margin-top: 40px;
+            width: 100%;
+            height: 440px;
+            display: flex;
+            flex-direction: column;
+            border-top: 1px solid black;
+            padding-top: 10px;
+        }
+
+        .board-write {
+            display: flex;
+            margin-bottom: 10px;
+        }
+
+        .board-content {
+            width: 60%;
+        }
+
+        .board-content a {
+            text-decoration: none;
+            color: black;
+        }
+
+        .board-content a:hover {
+            color: rgb(129, 127, 127);
+        }
+
+        .board-id {
+            width: 20%;
+        }
+
+        .board-date {
+            width: 20%;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="container">
+        <div class="box">
+            <div id="homeBtn">홈</div>
+
+            <div class="logo">전기자동차 갤러리</div>
+
+            <div id="writeBtn">글 쓰기</div>
+            <!-- 글 목록 -->
+            <div class="board">
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        // 글쓰기 버튼 클릭
+        let v_login = JSON.parse(sessionStorage.getItem('login'));
+
+        document.getElementById('writeBtn').addEventListener('click', () => {
+            if (!v_login) {
+                alert('로그인을 해주세요!');
+                location.href = './로그인.html';
+            } else {
+                location.href = './게시판글쓰기.html';
+            }
+        });
+
+        // 홈 버튼 클릭
+        document.getElementById('homeBtn').addEventListener('click', () => {
+            location.href = './index.html';
+        })
+
+        const db = firebase.firestore();
+        let v_board = document.getElementsByClassName('board')[0];
+
+
+        db.collection('board').get()
+            .then((result) => {
+                console.log(result);
+                let v_date = [];
+                let v_array = [];
+
+                    result.forEach((doc) => {
+                        console.log(doc);
+                        console.log(doc.id);
+                        console.log(doc.data());
+
+                        let v_json = doc.data();
+                        // console.log(v_json['date']);
+                        v_date.push(v_json['date']);
+
+                        let v_boardContent = '<div class="board-write">';
+                        v_boardContent += '<div class="board-content"><a href="./게시판글상세.html?id=' + doc.id + '">' + v_json['title'] + '</a></div>';
+                        v_boardContent += '<div class="board-id">' + v_json['memName'] + '</a></div>';
+                        v_boardContent += '<div class="board-date">' + v_json['date'] + '</div>';
+                        v_boardContent += '</div>';
+
+                        v_array.push(v_boardContent);
+                    })
+
+                // console.log(v_array);
+                // console.log(v_array.length);
+                // console.log(v_date);
+
+                for(let i = 0; i < v_array.length; i++){
+                    for(let j = 0; j < v_array.length - i; j++){
+                        if(v_date[j - 1] < v_date[j]){
+                            let tempDate = v_date[j - 1];
+                            v_date[j - 1] = v_date[j];
+                            v_date[j] = tempDate;
+
+                            let tempDiv = v_array[j - 1];
+                            v_array[j - 1] = v_array[j];
+                            v_array[j] = tempDiv; 
+                        }
+                    }
+                }
+                // console.log(v_array);
+                // console.log(v_date);
+
+                for(let i = 0; i < v_array.length; i++){
+                    v_board.innerHTML += v_array[i];
+                }
+
+            })
+            .catch((err) => {
+                console.log('에러발생', err);
+            })
+
+
+
+
+    </script>
+</body>
+
+</html>

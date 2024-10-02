@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>글수정</title>
+
+    <script src="./resources/js/common.js"></script>
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-storage-compat.js"></script>
+
+    <script src="./resources/js/common.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAhRj1kzsr6IRgUbVg5EaBXYsegRsI3IyI",
+            authDomain: "electrinic-car.firebaseapp.com",
+            projectId: "electrinic-car",
+            storageBucket: "electrinic-car.appspot.com",
+            messagingSenderId: "525878006251",
+            appId: "1:525878006251:web:5f9f2494f85e6b309e09ae",
+            measurementId: "G-3S6DFB92GY"
+        };
+        firebase.initializeApp(firebaseConfig);
+    </script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        .box {
+            margin: auto;
+            width: 600px;
+            height: 450px;
+            box-shadow: 0 0px 70px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        .title {
+            display: flex;
+            align-items: center;
+            font-size: 20px;
+            margin-bottom: 30px;
+        }
+
+        #inputTitle {
+            width: 40%;
+            height: 30px;
+            margin-left: 10px;
+            padding: 3px;
+            border-radius: 5px;
+            font-size: 20px;
+        }
+
+        .content {
+            height: 350px;
+        }
+
+        #inputContent {
+            width: 93%;
+            height: 300px;
+            padding: 20px;
+            font-size: 20px;
+            border-radius: 5px;
+        }
+
+        #editBtn {
+            margin-top: 5px;
+            font-size: 18px;
+        }
+
+        #deleteBtn {
+            margin-top: 5px;
+            margin-left: 10px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="box">
+            <div class="title">
+                제목:
+                <input id="inputTitle" type="text">
+            </div>
+            <div class="content">
+                <textarea id="inputContent"></textarea>
+            </div>
+            <button id="editBtn">글 수정</button>
+            <button id="deleteBtn">취소</button>
+        </div>
+    </div>
+
+
+    <script>
+        let v_query = new URLSearchParams(location.search);
+        let v_docId = v_query.get('id');
+        console.log(v_docId);
+
+        const db = firebase.firestore();
+
+        document.getElementById('deleteBtn').addEventListener('click', () => {
+            if(confirm('지금까지의 내용이 삭제됩니다. 수정을 그만하시겠습니까?')){
+                history.back();
+            }
+        });
+
+        document.getElementById('editBtn').addEventListener('click', () => {
+            let v_title = document.getElementById('inputTitle').value;
+            let v_content = document.getElementById('inputContent').value;
+            let v_date = makeBoardDate();
+
+            let v_json = {};
+            v_json['title'] = v_title;
+            v_json['content'] = v_content;
+            v_json['date'] = v_date;
+
+            db.collection('board').doc(v_docId).update(v_json)
+                .then(() => {
+                    location.replace('./게시판글상세.html?id=' + v_docId);
+                })
+                .catch((err) => {
+                    console.log("에러 발생", err);
+                })
+        });
+
+
+
+    </script>
+</body>
+
+</html>

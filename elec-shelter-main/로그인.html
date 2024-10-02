@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로그인</title>
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAhRj1kzsr6IRgUbVg5EaBXYsegRsI3IyI",
+            authDomain: "electrinic-car.firebaseapp.com",
+            projectId: "electrinic-car",
+            storageBucket: "electrinic-car.appspot.com",
+            messagingSenderId: "525878006251",
+            appId: "1:525878006251:web:5f9f2494f85e6b309e09ae",
+            measurementId: "G-3S6DFB92GY"
+        };
+        firebase.initializeApp(firebaseConfig);
+    </script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            position: relative;
+        }
+
+        .box {
+            margin: auto;
+            width: 500px;
+            height: 300px;
+            position: absolute;
+            top: 100px;
+            left: 50%;
+            transform: translate(-50%, 0);
+            border-radius: 10px;
+            display: flex;
+        }
+
+        .login-box{
+            width: 60%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: start;
+            padding-left: 20px;
+            box-shadow: 0 0px 70px rgba(0, 0, 0, 0.1);
+            border-top: 5px solid #4668CF;
+        }
+
+        .info-box{
+            display: flex;
+            flex-direction: column;
+        }
+
+        #inputId{
+            margin-top: 40px; 
+            margin-bottom: 10px;
+            font-size: 15px;
+            border-radius: 5px;
+            padding: 5px;
+        }
+
+        #inputPw{
+            font-size: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            padding: 5px;
+        }
+        
+        #loginBtn{
+            background-color: #4668CF;
+            color: white;
+            border-radius: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            width: 20%;
+            cursor: pointer;
+        }
+
+        #loginBtn:hover{
+            filter: contrast(80%);
+        }
+        
+        .sign-box{
+            width: 40%;
+            box-shadow: 0 0px 20px rgba(0, 0, 0, 0.03);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #signBtn{
+            margin-top: 10px;
+            border: 2px solid rgb(191, 191, 191);
+            padding: 5px;
+            border-radius: 10px;
+            cursor: pointer; 
+        }
+
+        #signBtn a{
+            text-align: center;
+            font-weight: 100;
+            font-size: 18px;
+            color: rgb(73, 73, 73);
+            text-decoration: none;
+        }
+
+        #signBtn:hover{
+            filter: opacity(0.6);
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="box">
+            <div class="login-box">
+                <div class="info-box">
+                    <h2 style="color: #4668CF; font-size: 30px;">Log in</h2>
+                    <input id="inputId" type="id" placeholder="아이디">
+                    <input id="inputPw" type="password" placeholder="비밀번호">
+                    <div id="loginBtn">Login</div>
+                </div>
+            </div>
+
+            <div class="sign-box">
+                <p style="color:#656161; font-size: 15px;">Don't have an account?</p>
+                <div id="signBtn"><a href="./회원가입.html">Sign Up</a></div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        const db = firebase.firestore();
+
+        document.getElementById('loginBtn').addEventListener('click', () => {
+            let v_inputId = document.getElementById('inputId').value;
+            let v_inputPw = document.getElementById('inputPw').value;
+
+            db.collection('member').doc(v_inputId).get()
+                .then((result) => {
+                    let v_data = result.data();
+
+                    if(!v_data){
+                        alert('아이디를 잘못 입력하셨습니다.');
+                        return;
+                    }
+
+                    if(v_data['memPw'] == v_inputPw){
+                        sessionStorage.setItem('login', JSON.stringify(v_data));
+                        location.replace('./index.html');
+                    }else{
+                        alert('유효하지 않은 아이디 혹은 비밀번호');
+                    }
+                })
+                .catch((error) => {
+                    console.log('에러발생', error);
+                });
+        });
+    </script>
+</body>
+
+</html>

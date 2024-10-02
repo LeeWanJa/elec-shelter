@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원가입</title>
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-storage-compat.js"></script>
+
+    <script src="./resources/js/common.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAhRj1kzsr6IRgUbVg5EaBXYsegRsI3IyI",
+            authDomain: "electrinic-car.firebaseapp.com",
+            projectId: "electrinic-car",
+            storageBucket: "electrinic-car.appspot.com",
+            messagingSenderId: "525878006251",
+            appId: "1:525878006251:web:5f9f2494f85e6b309e09ae",
+            measurementId: "G-3S6DFB92GY"
+        };
+        firebase.initializeApp(firebaseConfig);
+    </script>
+
+    <style>
+        div {
+            border: 0px solid black;
+            width: 90%;
+        }
+
+        p {
+            margin: 0;
+        }
+
+        input {
+            width: 435px;
+            height: 30px;
+            font-size: 15px;
+            padding: 5px;
+            margin-top: 5px;
+            margin-bottom: 10px;
+            border-radius: 7px;
+        }
+
+        .container {
+            margin: auto;
+            width: 500px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border: 0.1px solid rgb(132, 130, 130);
+            border-radius: 5px;
+            box-shadow: 0 0px 70px rgba(0, 0, 0, 0.1);
+        }
+
+        #sign-box {
+            margin-top: 20px;
+            margin-bottom: 40px;
+            background-color: #4668CF;
+            color: white;
+            font-size: 20px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        #sign-box:hover {
+            background-color: #5d80e8;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1 style="color:#4668CF; font-size: 40px;">ELEC-SHELTER</h1>
+
+        <!-- 아이디 -->
+        <div class="id-box">
+            <p>아이디</p>
+            <input id="inputId" type="id" placeholder="아이디">
+        </div>
+
+        <!-- 비밀번호 -->
+        <div class="pw-box">
+            <p>비밀번호</p>
+            <input id="inputPw" type="password" placeholder="비밀번호">
+        </div>
+
+        <!-- 닉네임 -->
+        <div class="name-box">
+            <p>닉네임</p>
+            <input id="inputName" type="text" placeholder="닉네임">
+        </div>
+
+        <!-- 가입하기 -->
+        <div id="sign-box">가입하기</div>
+    </div>
+
+    <script>
+        const db = firebase.firestore();
+        const storage = firebase.storage();
+
+        document.getElementById('sign-box').addEventListener('click', () => {
+            let v_inputId = document.getElementById('inputId');
+            let v_inputPw = document.getElementById('inputPw');
+            let v_inputName = document.getElementById('inputName');
+
+            let v_json = {};
+            v_json['memId'] = v_inputId.value;
+            v_json['memPw'] = v_inputPw.value;
+            v_json['memName'] = v_inputName.value;
+
+            console.log(v_json);
+
+            db.collection("member").get()
+                .then((result) => {
+
+                    result.forEach((doc) => {
+                        // console.log(doc);
+                        // console.log(doc.data());
+                        // console.log(doc.data()['memId']);
+                        let v_id = doc.data()['memId'];
+                        console.log(v_id == v_inputId.value);
+                        if (v_id == v_inputId.value) {
+                            alert('아이디가 중복됐습니다.');
+                            v_inputId.value = "";
+                            v_inputPw.value = "";
+                            v_inputName.value = "";
+                            return;
+                        }
+                    })
+
+                    db.collection("member").doc(v_inputId.value).set(v_json)
+                        .then(() => {
+                            console.log("Document successfully written!");
+                            alert("회원가입이 완료됐습니다! 로그인해주세요!");
+                            location.href = "./로그인.html";
+                        })
+                        .catch((error) => {
+                            console.error("Error Writing document: ", error);
+                        });
+
+                })
+                .catch((error) => {
+                    console.error(error);
+                })
+
+
+        });
+    </script>
+</body>
+
+</html>

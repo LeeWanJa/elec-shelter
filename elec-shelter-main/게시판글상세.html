@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>게시판글상세</title>
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-storage-compat.js"></script>
+
+    <script src="./resources/js/common.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAhRj1kzsr6IRgUbVg5EaBXYsegRsI3IyI",
+            authDomain: "electrinic-car.firebaseapp.com",
+            projectId: "electrinic-car",
+            storageBucket: "electrinic-car.appspot.com",
+            messagingSenderId: "525878006251",
+            appId: "1:525878006251:web:5f9f2494f85e6b309e09ae",
+            measurementId: "G-3S6DFB92GY"
+        };
+        firebase.initializeApp(firebaseConfig);
+    </script>
+    <script src="./resources/js/common.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        button{
+            cursor: pointer;
+        }
+
+        .box {
+            margin: auto;
+            width: 600px;
+            box-shadow: 0 0px 70px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: rgb(100, 162, 7);
+            font-weight: bolder;
+        }
+
+        .top {
+            width: 100%;
+            height: 10%;
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        .line {
+            margin-top: 10px;
+            width: 100%;
+            border: 0.3px solid black;
+        }
+
+        .top-title {
+            width: 60%;
+            border-left: 0.3px solid rgb(144, 137, 137);
+            border-right: 0.3px solid rgb(144, 137, 137);
+            padding-left: 10px;
+        }
+
+        .top-name {
+            width: 20%;
+            padding-left: 10px;
+            border-right: 0.3px solid rgb(144, 137, 137);
+        }
+
+        .top-date {
+            width: 20%;
+            padding-left: 10px;
+            border-right: 0.3px solid rgb(144, 137, 137);
+        }
+
+        .content-box {
+            width: 580px;
+            box-shadow: 0 0px 70px rgba(0, 0, 0, 0.1);
+            padding: 10px;
+            position: relative;
+            margin-top: 10px;
+        }
+
+        #content {
+            width: 515px;
+        }
+
+        #editBtn {
+            position: absolute;
+            right: 5px;
+            bottom: 10px;
+            font-size: 13px;
+            border-radius: 5px;
+
+            display: none;
+        }
+
+        #deleteBtn {
+            position: absolute;
+            right: 40px;
+            bottom: 10px;
+            font-size: 13px;
+            border-radius: 5px;
+
+            display: none;
+        }
+
+        .comment-all {
+            width: 600px;
+            display: flex;
+            flex-direction: column;
+            margin-top: 10px;
+
+        }
+
+        .comment-box {
+            width: 600px;
+            box-shadow: 0 0px 30px rgba(0, 0, 0, 0.1);
+            padding-left: 10px;
+            padding-top: 10px;
+            padding-bottom: 10px;
+            display: flex;
+            align-items: center;
+            border-top: 0.3px solid rgb(144, 137, 137);
+            font-size: 13px;
+        }
+
+        .comment-id {
+            width: 20%;
+        }
+
+        .comment-content {
+            width: 50%;
+        }
+
+        .comment-date {
+            width: 15%;
+        }
+
+        .comment-delete {
+            width: 10px;
+            color: red;
+            cursor: pointer;
+        }
+
+        .comment-delete:hover {
+            opacity: 0.7;
+        }
+
+        .comment-input {
+            width: 600px;
+            margin-top: 10px;
+
+            position: relative;
+        }
+
+        #inputComment {
+            width: 530px;
+            height: 100px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        #commentBtn {
+            position: absolute;
+            right: 0;
+            bottom: 3px;
+            font-size: 15px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="box">
+            <div class="logo">전기자동차 갤러리</div>
+            <div class="line"></div>
+            <div class="top">
+                <div class="top-title">
+                    <p id="title"></p>
+                </div>
+                <div class="top-name">
+                    <p id="name">닉네임</p>
+                </div>
+                <div class="top-date">
+                    <p id="date">게시날짜</p>
+                </div>
+            </div>
+
+            <!-- 본문 -->
+            <div class="content-box">
+                <p id="content"></p>
+                <button id="editBtn">수정</button>
+                <button id="deleteBtn">삭제</button>
+            </div>
+
+            <!-- 댓글 -->
+            <div class="comment-all">
+                
+            </div>
+
+            <div class="comment-input">
+                <textarea id="inputComment"></textarea>
+                <button id="commentBtn">등록</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let v_query = new URLSearchParams(location.search);
+        let v_docId = v_query.get('id');
+        let v_login;
+        console.log(v_docId);
+
+        const db = firebase.firestore();
+
+        db.collection('board').doc(v_docId).get()
+            .then((result) => {
+                let v_board = result.data();
+                console.log(v_board);
+
+                document.getElementById('title').innerHTML = v_board['title'];
+                document.getElementById('name').innerHTML = v_board['memName'];
+                document.getElementById('date').innerHTML = v_board['date'];
+                document.getElementById('content').innerHTML = v_board['content'];
+
+                v_login = JSON.parse(sessionStorage.getItem('login'));
+                console.log(v_login);
+
+                // 수정, 삭제 버튼 구현
+                if ((v_login) && (v_board['memId'] == v_login['memId'])) {
+                    let v_editBtn = document.getElementById("editBtn");
+                    v_editBtn.style.display = "block";
+                    v_editBtn.addEventListener('click', () => {
+                        location.href = "./글수정.html?id=" + v_docId;
+                    });
+
+                    let v_deleteBtn = document.getElementById('deleteBtn');
+                    v_deleteBtn.style.display = "block";
+                    v_deleteBtn.addEventListener('click', () => {
+                        if (confirm('정말로 삭제하시겠습니까?')) {
+                            db.collection('board').doc(v_docId).delete()
+                                .then(() => {
+                                    location.replace('./게시판.html');
+                                })
+                        }
+                    });
+                }
+            })
+            .catch((err) => {
+                console.log('에러발생', err);
+            });
+
+        // 댓글 구현
+        db.collection('board').doc(v_docId).collection('reply').orderBy('date').get()
+            .then((result) => {
+                result.forEach((doc) => {
+                    let v_json = doc.data();
+                    console.log(v_json);
+                    console.log(v_json['memId']);
+                    console.log(v_login);
+
+                    let v_temp = '<div class="comment-box">';
+                    v_temp += '<input type="hidden" value="' + doc.id + '">';
+                    v_temp += '<div class="comment-id"><p>' + v_json['memName'] + '</p></div>';
+                    v_temp += '<div class="comment-content"><p>' + v_json['content'] + '</p></div>';
+                    v_temp += '<div class="comment-date"><p>' + v_json['date'] + '</p></div>';
+
+                    if (v_login && (v_json['memId'] == v_login['memId'])) {
+                        v_temp += '<div class="comment-delete" onclick="f_delete()">X</div>';
+                    } else {
+                        v_temp += '<div></div>';
+                    }
+                    v_temp += '</div></div>';
+
+                    document.getElementsByClassName('comment-all')[0].innerHTML += v_temp;
+                });
+            })
+
+
+        document.getElementById('commentBtn').addEventListener('click', () => {
+            if (!v_login) {
+                alert('로그인을 해주세요!');
+                return;
+            }
+
+            let v_inputComment = document.getElementById('inputComment');
+            let v_memName = v_login['memName'];
+            let v_date = makeBoardDate();
+            let v_memId = v_login['memId'];
+
+            if (v_inputComment.value == "") {
+                alert('내용을 입력해주세요!');
+                return;
+            }
+
+            let v_json = {};
+            v_json['content'] = v_inputComment.value;
+            v_json['memName'] = v_memName;
+            v_json['date'] = v_date;
+            v_json['memId'] = v_memId;
+
+            console.log(v_json['content']);
+
+
+            db.collection('board').doc(v_docId).collection('reply').add(v_json)
+                .then((result) => {
+                    console.log(result);
+                    console.log(result.id);
+                    console.log('댓글 등록 완료');
+
+                    v_inputComment.value = "";
+
+                    let v_temp = '<div class="comment-box">';
+                    v_temp += '<input type="hidden" value="' + result.id + '">';
+                    v_temp += '<div class="comment-id"><p>' + v_json['memName'] + '</p></div>';
+                    v_temp += '<div class="comment-content"><p>' + v_json['content'] + '</p></div>';
+                    v_temp += '<div class="comment-date"><p>' + v_json['date'] + '</p></div>';
+                    v_temp += '<div class="comment-delete" onclick="f_delete()">X</div>';
+                    v_temp += '</div></div>';
+
+                    document.getElementsByClassName('comment-all')[0].innerHTML += v_temp;
+                })
+                .catch((err) => {
+                    console.log(err);
+                })
+
+        });
+
+
+        function f_delete(){
+            let v_reply = event.target.parentElement;
+            let v_id = v_reply.children[0].value;
+            db.collection('board').doc(v_docId).collection('reply').doc(v_id).delete()
+                .then(() => {
+                    v_reply.remove();
+                })
+        }
+    </script>
+</body>
+
+</html>
